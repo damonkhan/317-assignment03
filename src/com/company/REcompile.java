@@ -18,7 +18,7 @@ public class REcompile {
         try {
 
             j = 0;
-            p = "\"a*bc(a+b)d\"";
+            p = "\"(a*b+ac)d\""; // the regexp
             initialise(); // initialise arrays and state
             parse();
 
@@ -27,25 +27,58 @@ public class REcompile {
         }
     }
 
-    private static void expression() throws ParseException {
-        term();
+    private static int expression() throws ParseException {
+        int r;
+
+        r = term();
         if(isVocab(p.charAt(j)) || p.charAt(j) == '(')
             expression();
+        return r;
     }
 
-    private static void term() throws ParseException {
-        factor();
+    /*
+    TODO: check why n1 and n2 are not being to correct position.
+     */
+    private static int term() throws ParseException {
+
+        int r, t1, t2, f;
+
+        f = currState-1;
+        r =t1=factor();
         if(p.charAt(j) == '*')
+            setState(currState, ' ', currState+1, t1);
             j++;
+            r=currState;
+            currState++;
         if(p.charAt(j) == '+') {
+            if(n1[f] == n2[f])
+                n2[f] = currState;
+            n1[f] = currState;
+            f = currState - 1;
             j++;
-            term();
+            r = currState;
+            currState++;
+            t2 = term();
+            setState(r, ' ', t1, t2);
+            if (n1[f] == n2[f])
+                n2[f] = currState;
+            n1[f] = currState;
         }
+        return r;
     }
 
-    private static void factor() throws ParseException {
-        if(isVocab(p.charAt(j)))
+    /*
+    TODO: check why n1 and n2 are not being to correct position.
+     */
+    private static int factor() throws ParseException {
+        int r = 0;
+
+        if(isVocab(p.charAt(j))) {
+            setState(currState, p.charAt(j),currState+1, currState+1);
             j++;
+            r = currState;
+            currState++;
+        }
         else {
             if (p.charAt(j) == '(') {
                 j++;
@@ -62,12 +95,14 @@ public class REcompile {
                 throw new ParseException(p, j);
             }
         }
+        return r;
     }
 
     private static void parse() throws ParseException {
+        int initial;
         if (p.charAt(j) == '\"') {
             j++;
-            expression();
+            initial = expression();
         } else {
             System.err.println("Expression is not well formed.");
             throw new ParseException(p, j);
@@ -79,18 +114,18 @@ public class REcompile {
             System.err.println("Error - Expression not part of language.");
             throw new ParseException(p, j);
         }
+        setState(currState, ' ', 0, 0);
     }
 
     private static boolean isVocab(char element) {
         return element != '(' && element != ')' && element != '*' && element != '+' && element != '\"';
     }
 
-    private static int setState(int s, char ch, int next1, int next2) {
+    private static void setState(int s, char ch, int next1, int next2) {
        c[s] = ch;
        n1[s] = next1;
        n2[s] = next2;
 
-       return currState = s + 1;
     }
 
     /*
