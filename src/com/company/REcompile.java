@@ -1,5 +1,7 @@
 package com.company;
 
+import java.text.ParseException;
+
 public class REcompile {
 
     private static String p;
@@ -7,16 +9,23 @@ public class REcompile {
 
     public static void main(String[] args) {
 
-        p = "hello";
+        try {
+            j = 0;
+            p = "\"a**bc(a+b)d\"";
+            parse();
+
+        } catch (ParseException ex) {
+            System.err.println(ex);
+        }
     }
 
-   private static void expression() {
+   private static void expression() throws ParseException {
         term();
         if(isVocab(p.charAt(j)) || p.charAt(j) == '(')
             expression();
     }
 
-    private static void term() {
+    private static void term() throws ParseException {
         factor();
         if(p.charAt(j) == '*')
             j++;
@@ -26,7 +35,7 @@ public class REcompile {
         }
     }
 
-    private static void factor() {
+    private static void factor() throws ParseException {
         if(isVocab(p.charAt(j)))
             j++;
         else {
@@ -35,23 +44,35 @@ public class REcompile {
                 expression();
                 if (p.charAt(j) == ')')
                     j++;
-                else
-                    System.err.println("Unbalanced brackets - not W.F. expression.");
+                else {
+                    System.err.println("Unbalanced brackets - Expression is not well formed.");
+                    throw new ParseException(p, j);
+                }
             }
             else {
-                System.err.println("Not W.F. expression.");
+                System.err.println("Expression is not well formed.");
+                throw new ParseException(p, j);
             }
         }
     }
 
-    private static void parse() {
-        expression();
-        if (p.charAt(j) != '\"')
-            System.err.println("Error - expression not part of language.");
+    private static void parse() throws ParseException {
+        if (p.charAt(j) == '\"') {
+            j++;
+            expression();
+        } else {
+            System.err.println("Expression is not well formed.");
+            throw new ParseException(p, j);
+        }
+
+        if (p.charAt(j) == '\"') {
+            System.out.println("Expression is well formed.");
+        } else {
+            System.err.println("Error - Expression not part of language.");
+            throw new ParseException(p, j);
+        }
     }
 
-    private static boolean isVocab(char element) {
-        return true;
-    }
+    private static boolean isVocab(char element) { return element != '(' && element != ')' && element != '*' && element != '+' && element != '\"'; }
 }
 
