@@ -2,12 +2,13 @@ package com.company;
 
 public class Test {
      public static void main(String[] args) {
-         String p = "hello";
-         int j = 0;
 
-         if (p.charAt(j) == 'h') {
-             System.out.println("yes");
+         if (args.length != 1) {
+             System.out.println("err");
+             return;
          }
+         String p = args[0];
+         System.out.println(p);
      }
 
 }

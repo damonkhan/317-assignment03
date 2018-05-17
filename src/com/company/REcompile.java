@@ -8,6 +8,7 @@ public class REcompile {
 
     private static String p;
     private static int j;
+    // TODO: change arrays to arrayLists
     private static char[] c;
     private static int[] n1;
     private static int[] n2;
@@ -18,19 +19,21 @@ public class REcompile {
         try {
 
             j = 0;
-            // TODO: Make this so that regexp is passed as argument
-            p = "\"(a*b+ac)d\""; // the regexp
+            p = args[0]; // the regexp
             initialise(); // initialise arrays and state
             parse();
+            print();
 
         } catch (ParseException ex) {
             System.err.println(ex);
         }
     }
 
-    /*
-    TODO: Create print method to print out contents of FSM
-     */
+    private static void print() {
+        for (int i = 0; i < c.length; i++) {
+            System.out.println(c[i] + " " + n1[i] + " " + n2[i]);
+        }
+    }
 
     private static int expression() throws ParseException {
         int r;
