@@ -18,6 +18,7 @@ public class REcompile {
         try {
 
             j = 0;
+            // TODO: Make this so that regexp is passed as argument
             p = "\"(a*b+ac)d\""; // the regexp
             initialise(); // initialise arrays and state
             parse();
@@ -26,6 +27,10 @@ public class REcompile {
             System.err.println(ex);
         }
     }
+
+    /*
+    TODO: Create print method to print out contents of FSM
+     */
 
     private static int expression() throws ParseException {
         int r;
