@@ -42,9 +42,6 @@ public class REcompile {
         return r;
     }
 
-    /*
-    TODO: check why n1 and n2 are not being to correct position.
-     */
     private static int term() throws ParseException {
 
         int r, t1, t2, f;
@@ -78,6 +75,7 @@ public class REcompile {
      */
     private static int factor() throws ParseException {
 
+
         if(isVocab(p.charAt(j))) {
             setState(state, p.charAt(j), state +1, state + 1);
             state++;
@@ -86,9 +84,11 @@ public class REcompile {
         else {
             if (p.charAt(j) == '(') {
                 j++;
-                expression();
-                if (p.charAt(j) == ')')
+                int r = expression();
+                if (p.charAt(j) == ')') {
                     j++;
+                    return r;
+                }
                 else {
                     System.err.println("Unbalanced brackets - Expression is not well formed.");
                     throw new ParseException(p, j);
@@ -105,9 +105,11 @@ public class REcompile {
     private static void parse() throws ParseException {
         int initial;
         if (p.charAt(j) == '\"') {
-            setState(0, '\"', state, state);
             j++;
+            setState(0, '\"', 1, 1);
             initial = expression();
+            n1.set(0, initial);
+            n2.set(0, initial);
         } else {
             System.err.println("Expression is not well formed.");
             throw new ParseException(p, j);
@@ -126,6 +128,9 @@ public class REcompile {
         return element != '(' && element != ')' && element != '*' && element != '+' && element != '\"';
     }
 
+    /*
+    TODO: Fix this so indexes at correct position, figure out how to incorporate s
+     */
     private static void setState(int s, char ch, int next1, int next2) {
        c.add(ch);
        n1.add(next1);
