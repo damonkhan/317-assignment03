@@ -106,10 +106,8 @@ public class REcompile {
         int initial;
         if (p.charAt(j) == '\"') {
             j++;
-            setState(0, '\"', 1, 1);
             initial = expression();
-            n1.set(0, initial);
-            n2.set(0, initial);
+            setState(0, '\"', initial, initial);
         } else {
             System.err.println("Expression is not well formed.");
             throw new ParseException(p, j);
