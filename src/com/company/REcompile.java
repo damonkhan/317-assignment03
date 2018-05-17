@@ -3,15 +3,15 @@ package com.company;
 import com.sun.xml.internal.bind.v2.TODO;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 
 public class REcompile {
 
     private static String p;
     private static int j;
-    // TODO: change arrays to arrayLists
-    private static char[] c;
-    private static int[] n1;
-    private static int[] n2;
+    private static ArrayList<Character> c;
+    private static ArrayList<Integer> n1;
+    private static ArrayList<Integer> n2;
     private static int currState; // the current state being built
 
     public static void main(String[] args) {
@@ -30,8 +30,8 @@ public class REcompile {
     }
 
     private static void print() {
-        for (int i = 0; i < c.length; i++) {
-            System.out.println(c[i] + " " + n1[i] + " " + n2[i]);
+        for (int i = 0; i < c.size(); i++) {
+            System.out.println(c.get(i) + " " + n1.get(i) + " " + n2.get(i));
         }
     }
 
@@ -59,18 +59,18 @@ public class REcompile {
             r=currState;
             currState++;
         if(p.charAt(j) == '+') {
-            if(n1[f] == n2[f])
-                n2[f] = currState;
-            n1[f] = currState;
+            if(n1.get(f) == n2.get(f))
+                n2.set(f, currState);
+            n1.set(f, currState);
             f = currState - 1;
             j++;
             r = currState;
             currState++;
             t2 = term();
             setState(r, ' ', t1, t2);
-            if (n1[f] == n2[f])
-                n2[f] = currState;
-            n1[f] = currState;
+            if (n1.get(f) == n2.get(f))
+                n2.set(f, currState);
+            n1.set(f, currState);
         }
         return r;
     }
@@ -130,9 +130,9 @@ public class REcompile {
     }
 
     private static void setState(int s, char ch, int next1, int next2) {
-       c[s] = ch;
-       n1[s] = next1;
-       n2[s] = next2;
+       c.add(ch);
+       n1.add(next1);
+       n2.add(next2);
 
     }
 
@@ -141,9 +141,9 @@ public class REcompile {
     TODO: or let size arg be passed to method.
      */
     private static void initialise() {
-        c = new char[100];
-        n1 = new int[100];
-        n2 = new int[100];
+        c = new ArrayList<>();
+        n1 = new ArrayList<>();
+        n2 = new ArrayList<>();
         currState = 0;
     }
 }
