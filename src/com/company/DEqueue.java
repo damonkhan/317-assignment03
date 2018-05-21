@@ -67,7 +67,20 @@ public class DEqueue {
         }
         head = head.next;
         head.prev = null;
+        size--;
         return val;
+    }
+
+    public Node peek()
+    {
+        if(head==null)
+        {
+            System.err.println("head is null");
+            return null;
+        }
+
+        return head;
+
     }
 
     //prints out the head of the queue
