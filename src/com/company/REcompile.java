@@ -29,7 +29,7 @@ public class REcompile {
 
     private static void print() {
         for (int i = 0; i < c.size(); i++) {
-            System.out.println(c.get(i) + " " + n1.get(i) + " " + n2.get(i));
+            System.out.println(i + " " + c.get(i) + " " + n1.get(i) + " " + n2.get(i));
         }
     }
 
@@ -130,9 +130,17 @@ public class REcompile {
     TODO: Fix this so indexes at correct position, figure out how to incorporate s
      */
     private static void setState(int s, char ch, int next1, int next2) {
-       c.add(s, ch);
-       n1.add(s, next1);
-       n2.add(s, next2);
+
+
+        if (s < c.size()) {
+            c.add(s, ch);
+            n1.add(s, next1);
+            n2.add(s, next2);
+        } else {
+            c.add(ch);
+            n1.add(next1);
+            n2.add(next2);
+        }
 
     }
 
@@ -141,12 +149,6 @@ public class REcompile {
         n1 = new ArrayList<>();
         n2 = new ArrayList<>();
         state = 1;
-
-        for (int i = 0; i < 10; i++) {
-            c.add(null);
-            n1.add(0);
-            n2.add(0);
-        }
     }
 }
 
