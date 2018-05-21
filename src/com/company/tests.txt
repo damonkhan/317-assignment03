@@ -16,8 +16,11 @@ works:
 \"a?b\"
 \"a?b+c\"
 \"a?b*c\"
+\"a\*b\"
+\"a\+b\"
 
 doesn't work:
+\"a\*|b\"
 
 
 
