@@ -69,7 +69,7 @@ public class REcompile {
             // build the next state
             setState(state, p.charAt(j), state + 1, state + 1);
             if (finalState > 0) {
-                n1.set(finalState - 1, state - 1);
+                n1.set(finalState, state - 1);
             } else {
                 n1.set(finalState, state-1);
                 n1.set(term1-1, state + 1);
@@ -78,8 +78,8 @@ public class REcompile {
                 state++;
                 return state - 2;
             }
-            n1.set(term1-1, state + 1);
-            n2.set(term1-1, state + 1);
+            n1.set(term1, state + 1);
+            n2.set(term1, state + 1);
             j++;
             state++;
             return state -1;
@@ -121,9 +121,12 @@ public class REcompile {
 
         if (p.charAt(j) == '\"') {
             j++;
+            setState(0, ' ', 0, 0);
             initial = expression();
             // the dummy start state
-            setState(0, ' ', initial, initial);
+            n1.set(0, initial);
+            n2.set(0, initial);
+//            setState(0, ' ', initial, initial);
         } else {
             System.err.println("Expression is not well formed.");
             throw new ParseException(p, j);
