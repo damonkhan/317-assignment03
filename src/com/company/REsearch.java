@@ -9,6 +9,7 @@ public class REsearch {
     static DEqueue search = new DEqueue();
     static String[] data = new String[arraySize];
     static State s;
+    static int pos = 0;
     public static void main(String[] args) {
         try
         {
@@ -28,10 +29,10 @@ public class REsearch {
             String line;
             search.put(scan);
             int lineNum = 0;
-            boolean matchFound = false;
+            boolean matchFound;
 
-            int pos = 0;
-            int incrementer = 0;
+
+            int incrementer;
             while((line = b.readLine())!=null) {
                 matchFound = false;
                 //System.out.println("Line: " + lineNum);
@@ -43,36 +44,35 @@ public class REsearch {
                     pos = incrementer;
                     DEqueue.Node tmp;
                     tmp = search.pop();
-                    String d = data[tmp.data.getN1()];
-                    String[] val = d.split(" ");
-                    State nxt1, nxt2;
-                    //parses in a state from standard in
-                    if(data[tmp.data.getN1()].charAt(2) == ' ')
-                    {
-                     nxt1 = new State(tmp.data.getN1(), data[tmp.data.getN1()].charAt(2), Integer.parseInt(val[3]), Integer.parseInt(val[4]));
-                    }
-                    else
-                    {
-                     nxt1 = new State(tmp.data.getN1(), data[tmp.data.getN1()].charAt(2), Integer.parseInt(val[2]), Integer.parseInt(val[3]));
-                    }
-                    if(data[tmp.data.getN2()].charAt(2) == ' ')
-                    {
-                     nxt2 = new State(tmp.data.getN2(), data[tmp.data.getN2()].charAt(2), Integer.parseInt(val[3]), Integer.parseInt(val[4]));
-                    }
-                    else
-                    {
-                      nxt2 = new State(tmp.data.getN2(), data[tmp.data.getN2()].charAt(2), Integer.parseInt(val[2]), Integer.parseInt(val[3]));
-                    }
-                    search.push(nxt1);
-                    if (!((nxt1.getN1() == nxt2.getN1()) && (nxt1.getN2() == nxt1.getN2()))) {
-                        search.push(nxt2);
-                    }
+                    State nxt1,nxt2;
+                        String d = data[tmp.data.getN1()];
+                        String[] val = d.split(" ");
+
+                        //parses in a state array of values
+                        if (data[tmp.data.getN1()].charAt(2) == ' ') {
+                            nxt1 = new State(tmp.data.getN1(), data[tmp.data.getN1()].charAt(2), Integer.parseInt(val[3]), Integer.parseInt(val[4]));
+                        } else {
+                            nxt1 = new State(tmp.data.getN1(), data[tmp.data.getN1()].charAt(2), Integer.parseInt(val[2]), Integer.parseInt(val[3]));
+                        }
+                        if (data[tmp.data.getN2()].charAt(2) == ' ') {
+                            nxt2 = new State(tmp.data.getN2(), data[tmp.data.getN2()].charAt(2), Integer.parseInt(val[3]), Integer.parseInt(val[4]));
+                        } else {
+                            nxt2 = new State(tmp.data.getN2(), data[tmp.data.getN2()].charAt(2), Integer.parseInt(val[2]), Integer.parseInt(val[3]));
+                        }
+                        search.push(nxt1);
+                        if (!((nxt1.getN1() == nxt2.getN1()) && (nxt1.getN2() == nxt1.getN2()))) {
+                            search.push(nxt2);
+                        }
                     while ((search.size > 1)) {
                         //while the SCAN node isn't at the head
                         while ((search.peek().data.getN1() != -1) && (search.peek().data.getN2() != -1)) {
+                             if(tmp.data.getCh() == '.')
+                             {
+                                 handleWildcard(tmp);
+                             }
                             tmp = search.pop();
                             if (tmp.data.getN1() == 0 && tmp.data.getN2() == 0) {
-                                if(matchFound == false) {
+                                if(!matchFound) {
                                     System.out.println("End state reached, match found!");
                                 }
                                 matchFound = true;
@@ -130,7 +130,7 @@ public class REsearch {
                         if (in.compareTo("end") == 0) {
                             break;
                         }
-                        String d = in;
+                        //String d = in;
                         String[] val = d.split(" ");
                         int index = Integer.parseInt(val[0]);
                         char c = in.charAt(2);
@@ -164,6 +164,27 @@ public class REsearch {
         }
 
     }
+
+    private static void handleWildcard(DEqueue.Node tmp)
+    {
+        String d = data[tmp.data.getN1()];
+       String[] val = d.split(" ");
+       State nxt1,nxt2;
+
+      if (data[tmp.data.getN1()].charAt(2) == ' ') {
+          nxt1 = new State(tmp.data.getN1(), data[tmp.data.getN1()].charAt(2), Integer.parseInt(val[3]), Integer.parseInt(val[4]));
+      } else {
+          nxt1 = new State(tmp.data.getN1(), data[tmp.data.getN1()].charAt(2), Integer.parseInt(val[2]), Integer.parseInt(val[3]));
+      }
+      if (data[tmp.data.getN2()].charAt(2) == ' ') {
+          nxt2 = new State(tmp.data.getN2(), data[tmp.data.getN2()].charAt(2), Integer.parseInt(val[3]), Integer.parseInt(val[4]));
+      } else {
+          nxt2 = new State(tmp.data.getN2(), data[tmp.data.getN2()].charAt(2), Integer.parseInt(val[2]), Integer.parseInt(val[3]));
+      }
+      search.push(nxt1);
+      search.push(nxt2);
+      pos++;
+    }
     private static String[] expandArray(String[] d)
     {
         String[] tmp = new String[d.length+arraySize];
@@ -173,7 +194,7 @@ public class REsearch {
         }
         return tmp;
     }
-    //method to parse the input from standard input, also deals with double digits
+    //method to parse the input from array, also deals with double digits
     private static returnObject parseValues(int pos, String line, DEqueue.Node tmp, State nxt1, State nxt2)
     {
         if (pos < line.length()) {
@@ -228,7 +249,7 @@ public class REsearch {
         return r;
     }
     //used to return multiple values from the parse method
-    public static class returnObject
+    private static class returnObject
     {
         private int s;
         private String str;
