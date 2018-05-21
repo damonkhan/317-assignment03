@@ -73,7 +73,13 @@ public class DEqueue {
     //prints out the head of the queue
     public void printHead()
     {
-        System.out.println(head.data);
+        Node cu = head;
+        while(cu.next!=null)
+        {
+            System.out.println((""+cu.data.getState()) + (""+cu.data.getCh()) + (""+cu.data.getN1()) + (""+cu.data.getN2()));
+            cu = cu.next;
+        }
+        //System.out.println(head.data);
     }
 
     //prints out the tail of the queue
