@@ -21,11 +21,11 @@ public class REcompile {
 
         try {
 
-            j = 0;
+            j = 0; // pos in regexp
             p = args[0]; // the regexp
             initialise(); // initialise arrays and state
             parse();
-            System.out.println(p);
+            System.out.println(p); // print out RE
             print();
 
         } catch (ParseException ex) {
@@ -33,6 +33,7 @@ public class REcompile {
         }
     }
 
+    // prints out the FSM
     private static void print() {
         for (int i = 0; i < c.size(); i++) {
             System.out.println(i + " " + c.get(i) + " " + n1.get(i) + " " + n2.get(i));
@@ -43,37 +44,44 @@ public class REcompile {
         int r;
 
         r = term();
+
         if (j >= p.length()) {
             return r;
         }
-        if(isVocab(p.charAt(j)) || p.charAt(j) == '(')
+        if(isVocab(p.charAt(j)) || p.charAt(j) == '(' || p.charAt(j) == '|')
             expression();
         return r;
     }
 
     private static int term() throws ParseException {
-
         int result, term1, term2, finalState;
 
         finalState = state - 1;
+
         result=term1=factor();
+
         if (j >= p.length()) {
             return state -1;
         }
+
         if(p.charAt(j) == '*') {
             setState(state, ' ', term1, state +1);
-            if (finalState == 0 || finalState == 1) {
-                n1.set(finalState, state);
-                n2.set(finalState, state);
-
-            } else {
-                n1.set(finalState - 1, state);
-                n2.set(finalState - 1, state);
-            }
+            fixNext(n1, finalState, state);
+            fixNext(n2, finalState, state);
             j++;
             state++;
             return state -1;
         }
+
+        if (p.charAt(j) == '+') {
+            setState(state, ' ', term1, state + 1);
+            fixNext(n1, finalState, state);
+            fixNext(n2, finalState, state);
+            j++;
+            state++;
+            return state - 2;
+        }
+
         if(p.charAt(j) == '|') {
             n2.set(finalState, state);
             // build the branching machine
@@ -82,9 +90,7 @@ public class REcompile {
             state++;
             // build the next state
             setState(state, p.charAt(j), state + 1, state + 1);
-//            if (finalState > 0) {
-//                n1.set(finalState, state - 1);
-//            } else {
+
             if (finalState == 0) {
                 n1.set(finalState, state-1);
                 n1.set(term1, state + 1);
@@ -103,8 +109,6 @@ public class REcompile {
     }
 
     private static int factor() throws ParseException {
-
-
         if(isVocab(p.charAt(j))) {
             setState(state, p.charAt(j), state + 1, state + 1);
             state++;
@@ -136,12 +140,14 @@ public class REcompile {
 
         if (p.charAt(j) == '\"') {
             j++;
+            // dummy start state
             setState(0, ' ', 0, 0);
+
             initial = expression();
-            // the dummy start state
+
+            // set dummy start state to point to start state of FSM
             n1.set(0, initial);
             n2.set(0, initial);
-//            setState(0, ' ', initial, initial);
         } else {
             System.err.println("Expression is not well formed.");
             throw new ParseException(p, j);
@@ -179,12 +185,36 @@ public class REcompile {
 
     }
 
+    // reconfigure n1 and n2 for a given state so that the
+    // state is pointing to the correct next state.
+    public static void fixN1andN2(int finalState, int pos) {
+        if (finalState == 0 || finalState == 1) {
+            n1.set(finalState, pos);
+            n2.set(finalState, pos);
+        } else {
+            n1.set(finalState - 1, pos);
+            n2.set(finalState - 1, pos);
+        }
+        j++;
+        state++;
+    }
+
+    public static void fixNext(ArrayList<Integer> list, int finalState, int pos) {
+        if (finalState == 0 || finalState == 1)
+            list.set(finalState, pos);
+        else
+            list.set(finalState - 1, pos);
+    }
+
+
     private static void initialise() {
         c = new ArrayList<>();
         n1 = new ArrayList<>();
         n2 = new ArrayList<>();
-        state = 1; // leave state 0 to be dummy start state
-        // String searcher knows to where to start by reading from this start
+        // leave state 0 to be dummy start state
+        // String searcher knows where to start by reading from this start
+        state = 1;
+
     }
 }
 

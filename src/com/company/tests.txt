@@ -8,9 +8,14 @@ works:
 \"a*b|c\"
 \"(a*b|ac)d\"
 \"ba*(a|b)a\"
+\"a+\"
+\"a+b\"
+\"a+bc\"
+
 
 
 doesn't work:
+\"a+b*c\"
 
 
 invalid:
