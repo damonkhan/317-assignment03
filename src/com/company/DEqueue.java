@@ -9,9 +9,9 @@ public class DEqueue {
     class Node
     {
         Node prev, next;
-        String data;
+        State data;
 
-        public Node(String d)
+        public Node(State d)
         {
             data = d;
             prev = null;
@@ -19,7 +19,7 @@ public class DEqueue {
         }
     }
     //add an item to the head of the queue
-    public void addToHead(String d)
+    public void push(State d)
     {
         Node n = new Node(d);
         //if list is empty, add a head
@@ -37,7 +37,7 @@ public class DEqueue {
         size++;
     }
 
-    public void addToTail(String d)
+    public void put(State d)
     {
         Node n = new Node(d);
         //if list is empty then add a new tail and make head point to tail also
@@ -57,26 +57,17 @@ public class DEqueue {
     }
 
     //removes the first item in the list
-    public void removeHead()
+    public Node pop()
     {
+        Node val = head;
         if(head == null)
         {
             System.err.println("cannot remove head, it is null");
-            return;
+            return null;
         }
         head = head.next;
         head.prev = null;
-    }
-
-    //removes the last item in the list
-    public void removeTail()
-    {
-        if(tail == null)
-        {
-            System.err.println("Cannot remove tail, it is null");
-        }
-        tail = tail.prev;
-        tail.next = null;
+        return val;
     }
 
     //prints out the head of the queue
@@ -86,8 +77,8 @@ public class DEqueue {
     }
 
     //prints out the tail of the queue
-    public void printTail()
-    {
+    public void printTail() {
         System.out.println(tail.data);
     }
 }
+
