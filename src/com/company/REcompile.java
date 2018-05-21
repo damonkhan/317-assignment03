@@ -12,7 +12,6 @@ public class REcompile {
     private static ArrayList<Integer> n2;
     private static int state; // the next state to be built
 
-    //TODO: 5. implement ? operator
     //TODO: 6. implement escaped operators '\'
     //TODO: 7. abstract out operator rules into seperate methods
 
@@ -79,6 +78,15 @@ public class REcompile {
             j++;
             state++;
             return state - 2;
+        }
+
+        if (p.charAt(j) == '?') {
+            setState(state, ' ', term1, state + 1);
+            fixNext(n1, term1, state + 1);
+            fixNext(n2, term1, state + 1);
+            j++;
+            state++;
+            return state - 1;
         }
 
         if(p.charAt(j) == '|') {
