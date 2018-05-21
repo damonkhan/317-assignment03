@@ -27,7 +27,7 @@ public class REcompile {
 
             j = 0; // pos in regexp
             p = args[0]; // the regexp
-            escaped = false;
+            escaped = false; // checks if the special character has been escaped
             initialise(); // initialise arrays and state
             parse();
             System.out.println(p); // print out RE
@@ -71,11 +71,12 @@ public class REcompile {
         }
 
         if (p.charAt(j) == '\\') {
-            j++; // consume \
-            setState(state, p.charAt(j), state + 1, state + 1);
+            j++; // consume backslash
+            setState(state, p.charAt(j), state + 1, state + 1); // create new next state
             j++;
             state++;
             if (isTerm(p.charAt(j))) {
+                // Check if current character is a term
                 escaped = true;
 
             }
@@ -83,8 +84,8 @@ public class REcompile {
         }
 
         if (p.charAt(j) == '*') {
-            setState(state, ' ', term1, state +1);
-            fixNext(n1, finalState, state);
+            setState(state, ' ', term1, state +1); // create branching machine
+            fixNext(n1, finalState, state); // fix n1 and n2
             fixNext(n2, finalState, state);
             j++;
             state++;
@@ -142,6 +143,7 @@ public class REcompile {
             j++;
         }
         else if (escaped) {
+            // return if we are dealing with an escaped char
             return state - 1;
         }
         else {
@@ -199,6 +201,7 @@ public class REcompile {
         return element != '(' && element != ')' && element != '*' && element != '+' && element != '\"' && element != '|';
     }
 
+    // Checks if the element being read is a term
     private static boolean isTerm(char element) {
         return element == '|' || element == '+' || element == '*';
     }
