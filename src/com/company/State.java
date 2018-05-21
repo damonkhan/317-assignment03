@@ -3,9 +3,9 @@ package com.company;
 public class State {
     private int state;
     private char ch;
-    private State n1, n2;
+    private int n1, n2;
 
-    public State(int state, char ch,  State n1, State n2) {
+    public State(int state, char ch,  int n1, int n2) {
         this.state = state;
         this.ch = ch;
         this.n1 = n1;
@@ -20,11 +20,11 @@ public class State {
         return ch;
     }
 
-    public State getN1() {
+    public int getN1() {
         return n1;
     }
 
-    public State getN2() {
+    public int getN2() {
         return n2;
     }
 }
