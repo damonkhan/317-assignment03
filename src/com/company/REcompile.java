@@ -12,7 +12,6 @@ public class REcompile {
     private static ArrayList<Integer> n2;
     private static int state; // the next state to be built
 
-    //TODO: 1. work out why ba*(a+b)a isn't working
     //TODO: 2. implement wildcard
     //TODO: 3. change + to |
     //TODO: 4. implement + operator
@@ -27,6 +26,7 @@ public class REcompile {
             p = args[0]; // the regexp
             initialise(); // initialise arrays and state
             parse();
+            System.out.println(p);
             print();
 
         } catch (ParseException ex) {
@@ -62,28 +62,31 @@ public class REcompile {
             return state -1;
         }
         if(p.charAt(j) == '*') {
-            setState(state, ' ', state +1, term1);
-            if (finalState > 0) {
-                n1.set(finalState - 1, state);
-                n2.set(finalState - 1, state);
-            } else {
+            setState(state, ' ', term1, state +1);
+            if (finalState == 0 || finalState == 1) {
                 n1.set(finalState, state);
                 n2.set(finalState, state);
+
+            } else {
+                n1.set(finalState - 1, state);
+                n2.set(finalState - 1, state);
             }
             j++;
             state++;
             return state -1;
         }
         if(p.charAt(j) == '+') {
+            n2.set(finalState, state);
             // build the branching machine
-            setState(state, ' ',state + 1, term1);
+            setState(state, ' ', term1 ,state + 1);
             j++;
             state++;
             // build the next state
             setState(state, p.charAt(j), state + 1, state + 1);
-            if (finalState > 0) {
-                n1.set(finalState, state - 1);
-            } else {
+//            if (finalState > 0) {
+//                n1.set(finalState, state - 1);
+//            } else {
+            if (finalState == 0) {
                 n1.set(finalState, state-1);
                 n1.set(term1-1, state + 1);
                 n2.set(term1-1, state + 1);
