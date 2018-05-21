@@ -12,7 +12,6 @@ public class REcompile {
     private static ArrayList<Integer> n2;
     private static int state; // the next state to be built
 
-    //TODO: 4. implement + operator
     //TODO: 5. implement ? operator
     //TODO: 6. implement escaped operators '\'
     //TODO: 7. abstract out operator rules into seperate methods
