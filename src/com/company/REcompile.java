@@ -1,5 +1,10 @@
 package com.company;
 
+/*
+Damon Khan 1265776
+Luke Cullen
+ */
+
 import java.text.ParseException;
 import java.util.ArrayList;
 
@@ -11,16 +16,18 @@ public class REcompile {
     private static ArrayList<Integer> n1;
     private static ArrayList<Integer> n2;
     private static int state; // the next state to be built
+    private static boolean escaped;
 
     //TODO: 6. implement escaped operators '\'
-    //TODO: 7. abstract out operator rules into seperate methods
 
     public static void main(String[] args) {
 
         try {
 
+
             j = 0; // pos in regexp
             p = args[0]; // the regexp
+            escaped = false; // checks if the special character has been escaped
             initialise(); // initialise arrays and state
             parse();
             System.out.println(p); // print out RE
@@ -46,25 +53,39 @@ public class REcompile {
         if (j >= p.length()) {
             return r;
         }
-        if(isVocab(p.charAt(j)) || p.charAt(j) == '(' || p.charAt(j) == '|')
+        if(isVocab(p.charAt(j)) || p.charAt(j) == '(' || isTerm(p.charAt(j)))
             expression();
         return r;
     }
 
     private static int term() throws ParseException {
-        int result, term1, term2, finalState;
+        int result, term1, finalState;
 
         finalState = state - 1;
 
-        result=term1=factor();
+
+        result = term1 = factor();
 
         if (j >= p.length()) {
-            return state -1;
+            return state;
         }
 
-        if(p.charAt(j) == '*') {
-            setState(state, ' ', term1, state +1);
-            fixNext(n1, finalState, state);
+        if (p.charAt(j) == '\\') {
+            j++; // consume backslash
+            setState(state, p.charAt(j), state + 1, state + 1); // create new next state
+            j++;
+            state++;
+            if (isTerm(p.charAt(j))) {
+                // Check if current character is a term
+                escaped = true;
+
+            }
+            return result;
+        }
+
+        if (p.charAt(j) == '*') {
+            setState(state, ' ', term1, state +1); // create branching machine
+            fixNext(n1, finalState, state); // fix n1 and n2
             fixNext(n2, finalState, state);
             j++;
             state++;
@@ -89,7 +110,7 @@ public class REcompile {
             return state - 1;
         }
 
-        if(p.charAt(j) == '|') {
+        if (p.charAt(j) == '|') {
             n2.set(finalState, state);
             // build the branching machine
             setState(state, ' ', term1 ,state + 1);
@@ -120,6 +141,10 @@ public class REcompile {
             setState(state, p.charAt(j), state + 1, state + 1);
             state++;
             j++;
+        }
+        else if (escaped) {
+            // return if we are dealing with an escaped char
+            return state - 1;
         }
         else {
             if (p.charAt(j) == '(') {
@@ -173,7 +198,12 @@ public class REcompile {
 
     // Checks if the element being read is a literal character
     private static boolean isVocab(char element) {
-        return element != '(' && element != ')' && element != '*' && element != '+' && element != '\"';
+        return element != '(' && element != ')' && element != '*' && element != '+' && element != '\"' && element != '|';
+    }
+
+    // Checks if the element being read is a term
+    private static boolean isTerm(char element) {
+        return element == '|' || element == '+' || element == '*';
     }
 
     private static void setState(int s, char ch, int next1, int next2) {
@@ -194,18 +224,6 @@ public class REcompile {
 
     // reconfigure n1 and n2 for a given state so that the
     // state is pointing to the correct next state.
-    public static void fixN1andN2(int finalState, int pos) {
-        if (finalState == 0 || finalState == 1) {
-            n1.set(finalState, pos);
-            n2.set(finalState, pos);
-        } else {
-            n1.set(finalState - 1, pos);
-            n2.set(finalState - 1, pos);
-        }
-        j++;
-        state++;
-    }
-
     public static void fixNext(ArrayList<Integer> list, int finalState, int pos) {
         if (finalState == 0 || finalState == 1)
             list.set(finalState, pos);
