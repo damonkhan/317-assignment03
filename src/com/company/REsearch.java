@@ -17,10 +17,11 @@ public class REsearch {
                 System.out.println("Not enough arguments passed, need a filename to read");
             }
 
-
+            //declerations for file handling, io, etc
             InputStreamReader isRead = new InputStreamReader(System.in);
             BufferedReader br = new BufferedReader(isRead);
             State scan = new State(-1,  '/', -1,-1);
+            //filepath
             String filename = "D:/Intellij/317assignment03/src/com/company/"+args[0];
             FileReader fr = new FileReader(filename);
             BufferedReader b = new BufferedReader(fr);
@@ -33,16 +34,35 @@ public class REsearch {
             int incrementer = 0;
             while((line = b.readLine())!=null) {
                 matchFound = false;
-                System.out.println("Line: " + lineNum);
+                //System.out.println("Line: " + lineNum);
                 lineNum++;
+                //used to remember last start position of search to ensure no patterns are missed
                 incrementer = 0;
                 while (incrementer < line.length()) {
                     initialise(br, incrementer);
                     pos = incrementer;
                     DEqueue.Node tmp;
                     tmp = search.pop();
-                    State nxt1 = new State(tmp.data.getN1(), data[tmp.data.getN1()].charAt(2), Integer.parseInt("" + data[tmp.data.getN1()].charAt(4)), Integer.parseInt("" + data[tmp.data.getN1()].charAt(6)));
-                    State nxt2 = new State(tmp.data.getN2(), data[tmp.data.getN2()].charAt(2), Integer.parseInt("" + data[tmp.data.getN2()].charAt(4)), Integer.parseInt("" + data[tmp.data.getN2()].charAt(6)));
+                    String d = data[tmp.data.getN1()];
+                    String[] val = d.split(" ");
+                    State nxt1, nxt2;
+                    //parses in a state from standard in
+                    if(data[tmp.data.getN1()].charAt(2) == ' ')
+                    {
+                     nxt1 = new State(tmp.data.getN1(), data[tmp.data.getN1()].charAt(2), Integer.parseInt(val[3]), Integer.parseInt(val[4]));
+                    }
+                    else
+                    {
+                     nxt1 = new State(tmp.data.getN1(), data[tmp.data.getN1()].charAt(2), Integer.parseInt(val[2]), Integer.parseInt(val[3]));
+                    }
+                    if(data[tmp.data.getN2()].charAt(2) == ' ')
+                    {
+                     nxt2 = new State(tmp.data.getN2(), data[tmp.data.getN2()].charAt(2), Integer.parseInt(val[3]), Integer.parseInt(val[4]));
+                    }
+                    else
+                    {
+                      nxt2 = new State(tmp.data.getN2(), data[tmp.data.getN2()].charAt(2), Integer.parseInt(val[2]), Integer.parseInt(val[3]));
+                    }
                     search.push(nxt1);
                     if (!((nxt1.getN1() == nxt2.getN1()) && (nxt1.getN2() == nxt1.getN2()))) {
                         search.push(nxt2);
@@ -58,22 +78,13 @@ public class REsearch {
                                 matchFound = true;
                                 //return;
                             }
-                            if (pos < line.length()) {
-                                if (tmp.data.getCh() == ' ') {
-                                    nxt1 = new State(tmp.data.getN1(), data[tmp.data.getN1()].charAt(2), Integer.parseInt("" + data[tmp.data.getN1()].charAt(4)), Integer.parseInt("" + data[tmp.data.getN1()].charAt(6)));
-                                    nxt2 = new State(tmp.data.getN2(), data[tmp.data.getN2()].charAt(2), Integer.parseInt("" + data[tmp.data.getN2()].charAt(4)), Integer.parseInt("" + data[tmp.data.getN2()].charAt(6)));
-                                    search.push(nxt1);
-                                    search.push(nxt2);
-                                }
-                                if (tmp.data.getCh() == line.charAt(pos)) {
-                                    nxt1 = new State(tmp.data.getN1(), data[tmp.data.getN1()].charAt(2), Integer.parseInt("" + data[tmp.data.getN1()].charAt(4)), Integer.parseInt("" + data[tmp.data.getN1()].charAt(6)));
-                                    nxt2 = new State(tmp.data.getN2(), data[tmp.data.getN2()].charAt(2), Integer.parseInt("" + data[tmp.data.getN2()].charAt(4)), Integer.parseInt("" + data[tmp.data.getN2()].charAt(6)));
-                                    search.put(nxt1);
-                                    search.put(nxt2);
-                                    pos++;
-                                }
-
-                            }
+                            //returnObject just to tidy up some messy code
+                            returnObject p = parseValues(pos, line, tmp, nxt1, nxt2);
+                            line = p.str;
+                            pos = p.s;
+                            tmp = p.node;
+                            nxt1 = p.s1;
+                            nxt2 = p.s2;
                         }
                        /* if(matchFound = true)
                         {
@@ -102,7 +113,7 @@ public class REsearch {
         }
 
     }
-
+    //fills an array with all items
     private static void initialise(BufferedReader b, int i)
     {
         try
@@ -119,9 +130,17 @@ public class REsearch {
                         if (in.compareTo("end") == 0) {
                             break;
                         }
-                        int index = Integer.parseInt("" + in.charAt(0));
+                        String d = in;
+                        String[] val = d.split(" ");
+                        int index = Integer.parseInt(val[0]);
                         char c = in.charAt(2);
-                        s = new State(index, c, Integer.parseInt("" + in.charAt(4)), Integer.parseInt("" + in.charAt(6)));
+                        if(c == ' ')
+                        {
+                            s = new State(index, c, Integer.parseInt(val[3]), Integer.parseInt(val[4]));
+                        }
+                        else {
+                            s = new State(index, c, Integer.parseInt(val[2]), Integer.parseInt(val[3]));
+                        }
                         if (index == 0) {
                             search.push(s);
                         }
@@ -154,7 +173,98 @@ public class REsearch {
         }
         return tmp;
     }
+    //method to parse the input from standard input, also deals with double digits
+    private static returnObject parseValues(int pos, String line, DEqueue.Node tmp, State nxt1, State nxt2)
+    {
+        if (pos < line.length()) {
+            if (tmp.data.getCh() == ' ') {
+                String d = data[tmp.data.getN1()];
+                String[] val = d.split(" ");
+                if(data[tmp.data.getN1()].charAt(2) == ' ') {
+                    nxt1 = new State(tmp.data.getN1(), data[tmp.data.getN1()].charAt(2), Integer.parseInt(val[3]), Integer.parseInt(val[4]));
+                }
+                else
+                {
+                    nxt1 = new State(tmp.data.getN1(), data[tmp.data.getN1()].charAt(2), Integer.parseInt(val[2]), Integer.parseInt(val[3]));
+                }
+                d = data[tmp.data.getN2()];
+                val = d.split(" ");
+                if(data[tmp.data.getN2()].charAt(2) == ' ') {
+                    nxt2 = new State(tmp.data.getN2(), data[tmp.data.getN2()].charAt(2), Integer.parseInt(val[3]), Integer.parseInt(val[4]));
+                }
+                else
+                {
+                    nxt2 = new State(tmp.data.getN2(), data[tmp.data.getN2()].charAt(2), Integer.parseInt(val[2]), Integer.parseInt(val[3]));
+                }
+                search.push(nxt1);
+                search.push(nxt2);
+            }
+            if (tmp.data.getCh() == line.charAt(pos)) {
+                String d = data[tmp.data.getN1()];
+                String[] val = d.split(" ");
+                if(data[tmp.data.getN1()].charAt(2) == ' ') {
+                    nxt1 = new State(tmp.data.getN1(), data[tmp.data.getN1()].charAt(2), Integer.parseInt(val[3]), Integer.parseInt(val[4]));
+                }
+                else
+                {
+                    nxt1 = new State(tmp.data.getN1(), data[tmp.data.getN1()].charAt(2), Integer.parseInt(val[2]), Integer.parseInt(val[3]));
+                }
+                d = data[tmp.data.getN2()];
+                val = d.split(" ");
+                if(data[tmp.data.getN2()].charAt(2) == ' ') {
+                    nxt2 = new State(tmp.data.getN2(), data[tmp.data.getN2()].charAt(2), Integer.parseInt(val[3]), Integer.parseInt(val[4]));
+                }
+                else
+                {
+                    nxt2 = new State(tmp.data.getN2(), data[tmp.data.getN2()].charAt(2), Integer.parseInt(val[2]), Integer.parseInt(val[3]));
+                }
+                search.put(nxt1);
+                search.put(nxt2);
+                pos++;
+            }
 
+        }
+        returnObject r = new returnObject(pos, line, tmp, nxt1, nxt2);
+        return r;
+    }
+    //used to return multiple values from the parse method
+    public static class returnObject
+    {
+        private int s;
+        private String str;
+        private DEqueue.Node node;
+        private State s1;
+        private State s2;
+
+        public int getS() {
+            return s;
+        }
+
+        public String getStr() {
+            return str;
+        }
+
+        public DEqueue.Node getNode() {
+            return node;
+        }
+
+        public State getS1() {
+            return s1;
+        }
+
+        public State getS2() {
+            return s2;
+        }
+
+        public returnObject(int s, String str, DEqueue.Node node, State s1, State s2) {
+            this.s = s;
+            this.str = str;
+            this.node = node;
+            this.s1 = s1;
+            this.s2 = s2;
+        }
+
+    }
     /*
     TODO: Create Deque class to hold all possible current states
     TODO: and possible next states

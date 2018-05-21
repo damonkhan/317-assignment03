@@ -32,6 +32,7 @@ public class REcompile {
             parse();
             System.out.println(p); // print out RE
             print();
+            System.out.println("end");
 
         } catch (ParseException ex) {
             System.err.println(ex);
