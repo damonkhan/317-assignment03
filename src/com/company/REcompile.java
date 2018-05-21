@@ -44,38 +44,54 @@ public class REcompile {
 
     private static int term() throws ParseException {
 
-        int r, t1, t2, f;
+        int result, term1, term2, finalState;
 
-        f = state -1;
-        r =t1=factor();
+        finalState = state - 1;
+        result=term1=factor();
         if(p.charAt(j) == '*') {
-            setState(state, ' ', state +1, t1);
+            setState(state, ' ', state +1, term1);
+            if (finalState > 0) {
+                n1.set(finalState - 1, state);
+                n2.set(finalState - 1, state);
+            } else {
+                n1.set(finalState, state);
+                n2.set(finalState, state);
+            }
             j++;
-            r= state;
             state++;
+            return state -1;
         }
         if(p.charAt(j) == '+') {
-            if(n1.get(f) == n2.get(f))
-                n2.set(f, state);
-            n1.set(f, state);
-            f = state - 1;
+            // build the branching machine
+            setState(state, ' ', term1, state + 1);
             j++;
-            r = state;
             state++;
-            t2 = term();
-            setState(r, ' ', t1, t2);
-            if (n1.get(f) == n2.get(f))
-                n2.set(f, state);
-            n1.set(f, state);
+            // build the next state
+            setState(state, p.charAt(j), state + 1, state + 1);
+            if (finalState > 0) {
+                n1.set(finalState - 1, state - 1);
+            } else {
+                n1.set(finalState, state-1);
+                n1.set(term1-1, state + 1);
+                n2.set(term1-1, state + 1);
+                j++;
+                state++;
+                return state - 2;
+            }
+            n1.set(term1-1, state + 1);
+            n2.set(term1-1, state + 1);
+            j++;
+            state++;
+            return state -1;
         }
-        return r;
+        return result;
     }
 
     private static int factor() throws ParseException {
 
 
         if(isVocab(p.charAt(j))) {
-            setState(state, p.charAt(j), state, state);
+            setState(state, p.charAt(j), state + 1, state + 1);
             state++;
             j++;
         }
@@ -102,9 +118,11 @@ public class REcompile {
 
     private static void parse() throws ParseException {
         int initial;
+
         if (p.charAt(j) == '\"') {
             j++;
             initial = expression();
+            // the dummy start state
             setState(0, ' ', initial, initial);
         } else {
             System.err.println("Expression is not well formed.");
@@ -117,6 +135,8 @@ public class REcompile {
             System.err.println("Error - Expression not part of language.");
             throw new ParseException(p, j);
         }
+
+        // the finishing state
         setState(state, ' ', 0, 0);
     }
 
@@ -148,7 +168,8 @@ public class REcompile {
         c = new ArrayList<>();
         n1 = new ArrayList<>();
         n2 = new ArrayList<>();
-        state = 1;
+        state = 1; // leave state 0 to be dummy start state
+        // String searcher knows to where to start by reading from this start
     }
 }
 
