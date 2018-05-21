@@ -12,8 +12,7 @@ public class REcompile {
     private static ArrayList<Integer> n2;
     private static int state; // the next state to be built
 
-    //TODO: 2. implement wildcard
-    //TODO: 3. change + to |
+    //TODO: 3. implement wildcard
     //TODO: 4. implement + operator
     //TODO: 5. implement ? operator
     //TODO: 6. abstract out operator rules into seperate methods
@@ -75,7 +74,7 @@ public class REcompile {
             state++;
             return state -1;
         }
-        if(p.charAt(j) == '+') {
+        if(p.charAt(j) == '|') {
             n2.set(finalState, state);
             // build the branching machine
             setState(state, ' ', term1 ,state + 1);
@@ -88,8 +87,8 @@ public class REcompile {
 //            } else {
             if (finalState == 0) {
                 n1.set(finalState, state-1);
-                n1.set(term1-1, state + 1);
-                n2.set(term1-1, state + 1);
+                n1.set(term1, state + 1);
+                n2.set(term1, state + 1);
                 j++;
                 state++;
                 return state - 2;
