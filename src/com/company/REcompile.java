@@ -48,11 +48,12 @@ public class REcompile {
 
         f = state -1;
         r =t1=factor();
-        if(p.charAt(j) == '*')
+        if(p.charAt(j) == '*') {
             setState(state, ' ', state +1, t1);
             j++;
             r= state;
             state++;
+        }
         if(p.charAt(j) == '+') {
             if(n1.get(f) == n2.get(f))
                 n2.set(f, state);
@@ -70,14 +71,11 @@ public class REcompile {
         return r;
     }
 
-    /*
-    TODO: check why n1 and n2 are not being to correct position.
-     */
     private static int factor() throws ParseException {
 
 
         if(isVocab(p.charAt(j))) {
-            setState(state, p.charAt(j), state +1, state + 1);
+            setState(state, p.charAt(j), state, state);
             state++;
             j++;
         }
@@ -107,7 +105,7 @@ public class REcompile {
         if (p.charAt(j) == '\"') {
             j++;
             initial = expression();
-            setState(0, '\"', initial, initial);
+            setState(0, ' ', initial, initial);
         } else {
             System.err.println("Expression is not well formed.");
             throw new ParseException(p, j);
@@ -122,21 +120,23 @@ public class REcompile {
         setState(state, ' ', 0, 0);
     }
 
+    // Checks if the element being read is a literal character
     private static boolean isVocab(char element) {
         return element != '(' && element != ')' && element != '*' && element != '+' && element != '\"';
     }
 
     /*
-    TODO: Fix this so indexes at correct position, figure out how to incorporate s
+    TODO: Fix this so indexes at correct position
      */
     private static void setState(int s, char ch, int next1, int next2) {
 
-
+        // check if state is within arrayList range
         if (s < c.size()) {
             c.add(s, ch);
             n1.add(s, next1);
             n2.add(s, next2);
         } else {
+            // if not, tack new state on to the end of the arrayList
             c.add(ch);
             n1.add(next1);
             n2.add(next2);
