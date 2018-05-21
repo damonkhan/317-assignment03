@@ -1,0 +1,15 @@
+works:
+\"a\"
+\"a*\"
+\"ab\"
+\"a+b\"
+\"a*b\"
+\"ab*c\"
+\"a*b+c\"
+\"(a*b+ac)d\"
+
+doesn't work:
+\"a+b*c\" - invalid
+\"a+bc+d\"
+\"a*b*\"
+\"ba*(a+b)a\"

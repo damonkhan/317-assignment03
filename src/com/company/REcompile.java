@@ -12,6 +12,8 @@ public class REcompile {
     private static ArrayList<Integer> n2;
     private static int state; // the next state to be built
 
+    //TODO: work out why ba*(a+b)a isn't working
+
     public static void main(String[] args) {
 
         try {
@@ -37,6 +39,9 @@ public class REcompile {
         int r;
 
         r = term();
+        if (j >= p.length()) {
+            return r;
+        }
         if(isVocab(p.charAt(j)) || p.charAt(j) == '(')
             expression();
         return r;
@@ -48,6 +53,9 @@ public class REcompile {
 
         finalState = state - 1;
         result=term1=factor();
+        if (j >= p.length()) {
+            return state -1;
+        }
         if(p.charAt(j) == '*') {
             setState(state, ' ', state +1, term1);
             if (finalState > 0) {
@@ -63,7 +71,7 @@ public class REcompile {
         }
         if(p.charAt(j) == '+') {
             // build the branching machine
-            setState(state, ' ', term1, state + 1);
+            setState(state, ' ',state + 1, term1);
             j++;
             state++;
             // build the next state
