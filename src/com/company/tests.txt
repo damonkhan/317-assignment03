@@ -2,14 +2,18 @@ works:
 \"a\"
 \"a*\"
 \"ab\"
-\"a+b\"
+\"a|b\"
 \"a*b\"
 \"ab*c\"
-\"a*b+c\"
-\"(a*b+ac)d\"
+\"a*b|c\"
+\"(a*b|ac)d\"
+\"ba*(a|b)a\"
+
 
 doesn't work:
-\"a+b*c\" - invalid
-\"a+bc+d\"
-\"a*b*\"
-\"ba*(a+b)a\"
+
+
+invalid:
+\"a*b*\" - not valid in language
+\"a+bc+d\" - not valid in language
+\"a+b*c\" - not valid in language
