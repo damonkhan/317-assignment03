@@ -12,7 +12,12 @@ public class REcompile {
     private static ArrayList<Integer> n2;
     private static int state; // the next state to be built
 
-    //TODO: work out why ba*(a+b)a isn't working
+    //TODO: 1. work out why ba*(a+b)a isn't working
+    //TODO: 2. implement wildcard
+    //TODO: 3. change + to |
+    //TODO: 4. implement + operator
+    //TODO: 5. implement ? operator
+    //TODO: 6. abstract out operator rules into seperate methods
 
     public static void main(String[] args) {
 
@@ -156,9 +161,6 @@ public class REcompile {
         return element != '(' && element != ')' && element != '*' && element != '+' && element != '\"';
     }
 
-    /*
-    TODO: Fix this so indexes at correct position
-     */
     private static void setState(int s, char ch, int next1, int next2) {
 
         // check if state is within arrayList range
